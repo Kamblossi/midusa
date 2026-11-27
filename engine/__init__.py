@@ -7,15 +7,29 @@ before any ``pxr`` module is loaded.
 import usd_brep  # noqa: F401 — must precede any pxr import
 
 from engine.drafting_2d import Drafting2D
+from engine.rebar_detailing import (
+    BarScheduleItem,
+    build_bar_bending_schedule,
+    compute_bar_distribution,
+    standard_bend_diameter_mm,
+    standard_hook_extension_mm,
+    total_schedule_mass_kg,
+)
 from engine.renderer import Renderer3D
 from engine.sketch_bridge import SketchBridge
 from engine.solid_3d import Solid3DBuilder
 from engine.workspace import WorkspaceManager
 
 __all__ = [
+    "BarScheduleItem",
     "Drafting2D",
     "Renderer3D",
     "SketchBridge",
     "Solid3DBuilder",
     "WorkspaceManager",
+    "build_bar_bending_schedule",
+    "compute_bar_distribution",
+    "standard_bend_diameter_mm",
+    "standard_hook_extension_mm",
+    "total_schedule_mass_kg",
 ]

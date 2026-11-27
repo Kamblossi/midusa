@@ -77,6 +77,66 @@ class Renderer3D:
 
         return rendered
 
+    def render_assembly_views(
+        self,
+        parts: list[dict[str, Any]],
+        output_dir: str | Path,
+        prefix: str = "assembly",
+        views: tuple[str, ...] | list[str] | None = None,
+        window_size: tuple[int, int] = (1280, 960),
+        chord_height_tolerance: float = 0.05,
+    ) -> dict[str, Path]:
+        """Render multi-part assembly PNGs with per-part color and opacity (e.g. translucent concrete + opaque rebar).
+
+        Each item in ``parts`` is a dict with keys: ``brep``, ``color`` (hex), ``opacity`` (0..1),
+        and optional ``show_edges`` (bool).
+        """
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        meshes: list[tuple[pv.PolyData, dict[str, Any]]] = []
+        for part in parts:
+            mesh = self.brep_to_polydata(part["brep"], chord_height_tolerance=chord_height_tolerance)
+            meshes.append((mesh, part))
+
+        view_list = list(views or self.DEFAULT_VIEWS)
+        rendered: dict[str, Path] = {}
+
+        for view_name in view_list:
+            plotter = pv.Plotter(off_screen=True, window_size=window_size)
+            plotter.set_background("#0f172a", top="#1e293b")
+            for mesh, part in meshes:
+                plotter.add_mesh(
+                    mesh,
+                    color=part.get("color", "#94a3b8"),
+                    opacity=float(part.get("opacity", 1.0)),
+                    metallic=float(part.get("metallic", 0.25)),
+                    roughness=float(part.get("roughness", 0.45)),
+                    show_edges=bool(part.get("show_edges", False)),
+                    edge_color="#334155",
+                    line_width=0.5,
+                )
+            plotter.add_axes()
+
+            if view_name == "iso":
+                plotter.view_isometric()
+            elif view_name == "top":
+                plotter.view_xy()
+            elif view_name == "front":
+                plotter.view_xz()
+            elif view_name == "side":
+                plotter.view_yz()
+            else:
+                plotter.view_isometric()
+
+            plotter.reset_camera()
+            out_path = out_dir / f"{prefix}_{view_name}.png"
+            plotter.screenshot(str(out_path))
+            plotter.close()
+            rendered[view_name] = out_path
+
+        return rendered
+
     @staticmethod
     def compute_visual_diff(
         img_a_path: str | Path,
