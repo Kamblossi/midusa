@@ -7,6 +7,13 @@ before any ``pxr`` module is loaded.
 import usd_brep  # noqa: F401 — must precede any pxr import
 
 from engine.drafting_2d import Drafting2D
+from engine.dwg_bridge import (
+    DwgBridge,
+    configure_odafc,
+    dwg_to_dxf,
+    dxf_to_dwg,
+    find_oda_converter,
+)
 from engine.member_profiles import (
     solve_flanged_profile,
     solve_pad_footing_profile,
@@ -42,6 +49,7 @@ from engine.workspace import WorkspaceManager
 __all__ = [
     "BarScheduleItem",
     "Drafting2D",
+    "DwgBridge",
     "Renderer3D",
     "SketchBridge",
     "Solid3DBuilder",
@@ -54,10 +62,14 @@ __all__ = [
     "calc_lsc_compression_lap",
     "compute_bar_distribution",
     "compute_takeoff",
+    "configure_odafc",
     "cut_length_mm",
     "distribute_bars",
     "distribute_discrete_bars",
     "distribute_multi_zone",
+    "dwg_to_dxf",
+    "dxf_to_dwg",
+    "find_oda_converter",
     "min_bend_dia",
     "solve_flanged_profile",
     "solve_pad_footing_profile",

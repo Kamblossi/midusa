@@ -314,6 +314,26 @@ class Drafting2D:
     ) -> tuple[Path, Path]:
         return self.save_dxf(dxf_path), self.export_png(png_path, dpi=dpi)
 
+    def export_dwg(
+        self,
+        dwg_path: str | Path | None = None,
+        version: str = "ACAD2018",
+    ) -> dict:
+        """Save an audited DXF and convert it to AutoCAD .dwg via DwgBridge."""
+        import tempfile
+        from engine.dwg_bridge import DwgBridge
+
+        if dwg_path is not None:
+            out_dwg = Path(dwg_path)
+            tmp_dxf = out_dwg.with_suffix(".dxf")
+            self.save_dxf(tmp_dxf)
+            return DwgBridge.dxf_to_dwg(tmp_dxf, out_dwg, version=version)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dxf = Path(tmpdir) / "drawing.dxf"
+            self.save_dxf(tmp_dxf)
+            return DwgBridge.dxf_to_dwg(tmp_dxf, None, version=version)
+
     def draw_bbs_table(
         self,
         origin: tuple[float, float],
