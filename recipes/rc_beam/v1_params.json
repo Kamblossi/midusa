@@ -1,0 +1,23 @@
+{
+  "member_mark": "B-01",
+  "clear_span_mm": 4800.0,
+  "support_width_left_mm": 300.0,
+  "support_width_right_mm": 300.0,
+  "width_mm": 250.0,
+  "depth_mm": 500.0,
+  "flange_type": "RECT",
+  "flange_width_mm": 0.0,
+  "flange_thick_mm": 0.0,
+  "cover_mm": 40.0,
+  "end_condition": "SIMPLY_SUPPORTED",
+  "bot_bar_count": 3,
+  "bot_bar_dia_mm": 16,
+  "top_bar_count": 2,
+  "top_bar_dia_mm": 12,
+  "link_dia_mm": 10,
+  "link_end_zone_mm": 0.0,
+  "link_end_spacing_mm": 175.0,
+  "link_mid_spacing_mm": 175.0,
+  "fc_mpa": 25.0,
+  "fy_mpa": 460.0
+}

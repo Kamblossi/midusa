@@ -1,0 +1,21 @@
+{
+  "member_mark": "S-01",
+  "length_x_mm": 5000.0,
+  "length_y_mm": 4000.0,
+  "thickness_mm": 175.0,
+  "support_edge_width_mm": 250.0,
+  "cover_top_mm": 25.0,
+  "cover_bot_mm": 25.0,
+  "first_bar_edge_offset_mm": 50.0,
+  "b1_dia_mm": 12,
+  "b1_spacing_mm": 150.0,
+  "b2_dia_mm": 12,
+  "b2_spacing_mm": 175.0,
+  "has_top_strips": true,
+  "t1_dia_mm": 10,
+  "t1_spacing_mm": 200.0,
+  "t1_extension_ratio": 0.25,
+  "chair_max_grid_mm": 1200.0,
+  "fc_mpa": 25.0,
+  "fy_mpa": 460.0
+}

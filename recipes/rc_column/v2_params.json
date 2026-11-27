@@ -1,0 +1,21 @@
+{
+  "member_mark": "C-01",
+  "shape_type": "RECT",
+  "width_mm": 400.0,
+  "depth_mm": 400.0,
+  "clear_height_mm": 3600.0,
+  "junction_depth_mm": 0.0,
+  "cover_mm": 40.0,
+  "vert_bar_count": 8,
+  "vert_bar_dia_mm": 20,
+  "splice_mode": "STRAIGHT_LAP",
+  "crank_offset_mm": 0.0,
+  "lap_projection_mm": 800.0,
+  "tie_dia_mm": 10,
+  "confinement_len_mm": 600.0,
+  "tie_conf_spacing_mm": 125.0,
+  "tie_mid_spacing_mm": 200.0,
+  "has_crossties": true,
+  "fc_mpa": 30.0,
+  "fy_mpa": 460.0
+}
