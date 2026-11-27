@@ -1,0 +1,285 @@
+{
+  "schema_version": "1.0.0",
+  "units": "SI_METRIC_MM_MPA_KN",
+  "rules": [
+    {
+      "rule_id": "R-COV-01",
+      "category": "cover",
+      "applies_to": ["rc_pad_footing", "retaining_wall"],
+      "formula_or_threshold": "cover_earth_mm >= 75.0",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Set cover_earth_mm = 75"
+    },
+    {
+      "rule_id": "R-COV-02",
+      "category": "cover",
+      "applies_to": ["rc_beam", "rc_column", "retaining_wall"],
+      "formula_or_threshold": "cover_exposed_mm >= 40.0",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Increase cover_mm to 40"
+    },
+    {
+      "rule_id": "R-COV-03",
+      "category": "cover",
+      "applies_to": ["rc_slab"],
+      "formula_or_threshold": "cover_top_mm >= 20.0 and cover_bot_mm >= 20.0",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Set slab covers to 25"
+    },
+    {
+      "rule_id": "R-SPC-01",
+      "category": "spacing",
+      "applies_to": ["rc_beam", "rc_column"],
+      "formula_or_threshold": "s_clear >= max(d_b, d_agg + 5, 25)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Widen width_mm by 50 or split bars to 2 vertical layers"
+    },
+    {
+      "rule_id": "R-SPC-02",
+      "category": "spacing",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "s_actual <= min(3 * pad_depth_mm, 450)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Reduce mat_spacing_mm to min(3*h, 450)"
+    },
+    {
+      "rule_id": "R-SPC-03",
+      "category": "spacing",
+      "applies_to": ["rc_slab"],
+      "formula_or_threshold": "s_main <= min(2*h, 300) and s_dist <= min(3*h, 450)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Tighten target spacing_mm to code ceiling"
+    },
+    {
+      "rule_id": "R-SPC-04",
+      "category": "spacing",
+      "applies_to": ["rc_column"],
+      "formula_or_threshold": "s_clr_face <= 150",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Increase vert_bar_count to 8 and set has_crossties = true"
+    },
+    {
+      "rule_id": "R-SPC-05",
+      "category": "spacing",
+      "applies_to": ["rc_beam"],
+      "formula_or_threshold": "s_end <= min(d/4, 8*d_bot, 24*d_link, 300)",
+      "unit": "mm",
+      "severity": "WARNING",
+      "repair_hint": "Set link_end_zone_mm = 2*h and s1 <= floor_5mm(s_max_end)"
+    },
+    {
+      "rule_id": "R-SPC-06",
+      "category": "spacing",
+      "applies_to": ["rc_beam"],
+      "formula_or_threshold": "s_mid <= min(d/2, 300)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Reduce link_mid_spacing_mm to min(d/2, 300)"
+    },
+    {
+      "rule_id": "R-SPC-07",
+      "category": "spacing",
+      "applies_to": ["rc_column"],
+      "formula_or_threshold": "s_conf <= min(8*d_vert, 24*d_tie, b_min/2, 300)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Reduce tie_conf_spacing_mm and set l_o >= max(h, H_clr/6, 450)"
+    },
+    {
+      "rule_id": "R-SPC-08",
+      "category": "spacing",
+      "applies_to": ["rc_column"],
+      "formula_or_threshold": "s_mid <= min(16*d_vert, 48*d_tie, b_min)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Reduce tie_mid_spacing_mm to s_max_ord"
+    },
+    {
+      "rule_id": "R-BND-01",
+      "category": "bend_hook",
+      "applies_to": ["all"],
+      "formula_or_threshold": "D_bend >= ceil_5mm(4*d_b if link and d_b<=16 else (6*d_b if d_b<=25 else 8*d_b))",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Recompute D_bend from Primitive 3 lookup table"
+    },
+    {
+      "rule_id": "R-BND-02",
+      "category": "bend_hook",
+      "applies_to": ["all"],
+      "formula_or_threshold": "tail_90_end >= 12*d_b and tail_180_end >= max(4*d_b, 65)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Extend hook leg H_90 or J_180"
+    },
+    {
+      "rule_id": "R-BND-03",
+      "category": "bend_hook",
+      "applies_to": ["rc_beam", "rc_column", "rc_pad_footing"],
+      "formula_or_threshold": "tail_stirrup_135 >= max(6*d_link, 75)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Set link hook tail to max(6*d_link, 75)"
+    },
+    {
+      "rule_id": "R-BND-04",
+      "category": "bend_hook",
+      "applies_to": ["rc_column"],
+      "formula_or_threshold": "crank_offset_mm / crank_h <= 1/6 and crank_offset_mm < 75",
+      "unit": "ratio",
+      "severity": "ERROR",
+      "repair_hint": "Switch splice_mode to DOWEL"
+    },
+    {
+      "rule_id": "R-DEV-01",
+      "category": "development",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "l_d_avail >= l_d (or >= l_dh with hook)",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Increase pad_width_mm or downsize mat_bar_dia_mm"
+    },
+    {
+      "rule_id": "R-DEV-02",
+      "category": "development",
+      "applies_to": ["rc_beam"],
+      "formula_or_threshold": "l_dh_avail >= l_dh and H_90 <= h - 2*cover_mm",
+      "unit": "mm",
+      "severity": "WARNING",
+      "repair_hint": "Widen support_width_mm or downsize bot_bar_dia_mm"
+    },
+    {
+      "rule_id": "R-DEV-03",
+      "category": "development",
+      "applies_to": ["rc_column", "rc_pad_footing"],
+      "formula_or_threshold": "lap_projection_mm >= l_sc_comp and pad_emb >= l_dc_pad",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Set lap_projection_mm = ceil_5mm(l_sc_comp) or deepen pad"
+    },
+    {
+      "rule_id": "R-DEV-04",
+      "category": "development",
+      "applies_to": ["all"],
+      "formula_or_threshold": "bar_dia_mm <= 36 for all lap splices",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Replace lap with mechanical coupler"
+    },
+    {
+      "rule_id": "R-STR-01",
+      "category": "shear_flexure",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "v_u_punch <= phi * v_c_punch",
+      "unit": "MPa",
+      "severity": "ERROR",
+      "repair_hint": "Increase pad_depth_mm in +50 mm steps"
+    },
+    {
+      "rule_id": "R-STR-02",
+      "category": "shear_flexure",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "V_u_1w <= phi * V_c_1w",
+      "unit": "kN",
+      "severity": "ERROR",
+      "repair_hint": "Increase pad_depth_mm in +50 mm steps"
+    },
+    {
+      "rule_id": "R-STR-03",
+      "category": "shear_flexure",
+      "applies_to": ["rc_pad_footing", "rc_beam", "retaining_wall"],
+      "formula_or_threshold": "M_u <= 0.90 * M_n and A_s_prov >= A_s_min",
+      "unit": "kN.m",
+      "severity": "ERROR",
+      "repair_hint": "Decrease bar spacing or upgrade bar_dia_mm"
+    },
+    {
+      "rule_id": "R-STR-04",
+      "category": "shear_flexure",
+      "applies_to": ["rc_column"],
+      "formula_or_threshold": "0.01 <= rho_g <= 0.04 and n_bars >= (4 if RECT else 6)",
+      "unit": "ratio",
+      "severity": "ERROR",
+      "repair_hint": "Upgrade vert_bar_dia_mm or vert_bar_count"
+    },
+    {
+      "rule_id": "R-STR-05",
+      "category": "shear_flexure",
+      "applies_to": ["rc_slab"],
+      "formula_or_threshold": "A_s_pm >= max(0.0018*420/fy, 0.0014)*1000*h",
+      "unit": "mm2/m",
+      "severity": "ERROR",
+      "repair_hint": "Tighten slab bar spacing or increase dia_mm"
+    },
+    {
+      "rule_id": "R-BRG-01",
+      "category": "bearing",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "q_gross <= q_allow and q_net <= q_allow",
+      "unit": "kPa",
+      "severity": "ERROR",
+      "repair_hint": "Increase pad_width_mm and pad_length_mm in +100 mm steps"
+    },
+    {
+      "rule_id": "R-BRG-02",
+      "category": "bearing",
+      "applies_to": ["rc_pad_footing"],
+      "formula_or_threshold": "P_u <= min(phi*B_n_pad, phi*B_n_col)",
+      "unit": "kN",
+      "severity": "ERROR",
+      "repair_hint": "Enlarge column stub or increase fc_col_mpa"
+    },
+    {
+      "rule_id": "R-GEO-01",
+      "category": "retaining_wall",
+      "applies_to": ["retaining_wall"],
+      "formula_or_threshold": "FoS_OT >= 2.0 and e <= B_base / 6",
+      "unit": "ratio",
+      "severity": "ERROR",
+      "repair_hint": "Increase heel_width_mm in +100 mm steps"
+    },
+    {
+      "rule_id": "R-GEO-02",
+      "category": "retaining_wall",
+      "applies_to": ["retaining_wall"],
+      "formula_or_threshold": "FoS_SL >= 1.50",
+      "unit": "ratio",
+      "severity": "ERROR",
+      "repair_hint": "Add/deepen shear_key_depth_mm (>= 300) or widen heel_width_mm"
+    },
+    {
+      "rule_id": "R-GEO-03",
+      "category": "retaining_wall",
+      "applies_to": ["retaining_wall"],
+      "formula_or_threshold": "q_max <= q_allow and q_min >= 0",
+      "unit": "kPa",
+      "severity": "ERROR",
+      "repair_hint": "Widen toe_width_mm or heel_width_mm"
+    },
+    {
+      "rule_id": "R-3D-01",
+      "category": "collision_3d",
+      "applies_to": ["all"],
+      "formula_or_threshold": "rebar_to_rebar_overlap_vol == 0.0",
+      "unit": "mm3",
+      "severity": "ERROR",
+      "repair_hint": "Offset crossing bar layers by (d1 + d2)/2 + 0.5 mm"
+    },
+    {
+      "rule_id": "R-3D-02",
+      "category": "collision_3d",
+      "applies_to": ["all"],
+      "formula_or_threshold": "min_cover_brep >= cover_mm - 0.5",
+      "unit": "mm",
+      "severity": "ERROR",
+      "repair_hint": "Clamp outer bar/link geometry inside cover boundary"
+    }
+  ]
+}
