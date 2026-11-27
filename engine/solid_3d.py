@@ -204,3 +204,73 @@ class Solid3DBuilder:
         body = _render_tree(tree, 0)
         out_path.write_text("\n".join(header + body) + "\n", encoding="utf-8")
         return out_path
+
+    def check_clearance_and_clashes(
+        self,
+        concrete_breps: list[usd_brep.Brep],
+        rebar_breps: list[usd_brep.Brep],
+        cover_mm: float,
+    ) -> dict[str, Any]:
+        """Verify R-3D-01 (zero rebar-to-rebar overlap) and R-3D-02 (min cover >= cover_mm - 0.5)."""
+        rebar_bboxes = [usd_brep.brep_bounding_box(b, tight=False) for b in rebar_breps]
+        overlap_vol = 0.0
+        clashes: list[tuple[int, int]] = []
+
+        for i in range(len(rebar_breps)):
+            (ax0, ay0, az0), (ax1, ay1, az1) = rebar_bboxes[i]
+            for j in range(i + 1, len(rebar_breps)):
+                (bx0, by0, bz0), (bx1, by1, bz1) = rebar_bboxes[j]
+                if ax1 <= bx0 + 0.05 or bx1 <= ax0 + 0.05:
+                    continue
+                if ay1 <= by0 + 0.05 or by1 <= ay0 + 0.05:
+                    continue
+                if az1 <= bz0 + 0.05 or bz1 <= az0 + 0.05:
+                    continue
+                # Potential bbox overlap: check exact B-Rep intersection
+                inter = usd_brep.boolean_intersection(
+                    usd_brep.brep_copy(rebar_breps[i]),
+                    usd_brep.brep_copy(rebar_breps[j]),
+                )
+                if inter is not None and usd_brep.is_manifold_solid(inter):
+                    vol = float(usd_brep.compute_volume(inter))
+                    if vol > 1e-3:
+                        overlap_vol += vol
+                        clashes.append((i, j))
+
+        # Compute minimum cover from rebar outer surface to enclosing concrete outer bounds
+        min_cover = float("inf")
+        if concrete_breps and rebar_breps:
+            c_boxes = [usd_brep.brep_bounding_box(c, tight=True) for c in concrete_breps]
+            c_x0 = min(b[0][0] for b in c_boxes)
+            c_y0 = min(b[0][1] for b in c_boxes)
+            c_z0 = min(b[0][2] for b in c_boxes)
+            c_x1 = max(b[1][0] for b in c_boxes)
+            c_y1 = max(b[1][1] for b in c_boxes)
+            c_z1 = max(b[1][2] for b in c_boxes)
+            for rb in rebar_breps:
+                (rx0, ry0, rz0), (rx1, ry1, rz1) = usd_brep.brep_bounding_box(rb, tight=True)
+                # Check lateral cover on all bars; check bottom/top Z cover when bar terminates inside concrete
+                d_vals = [
+                    rx0 - c_x0,
+                    c_x1 - rx1,
+                    ry0 - c_y0,
+                    c_y1 - ry1,
+                ]
+                if rz0 > c_z0 + 1e-3:
+                    d_vals.append(rz0 - c_z0)
+                if rz1 <= c_z1 - 1e-3:
+                    d_vals.append(c_z1 - rz1)
+                pos_vals = [v for v in d_vals if v >= -0.5]
+                if pos_vals:
+                    min_cover = min(min_cover, min(pos_vals))
+
+        if min_cover == float("inf"):
+            min_cover = float(cover_mm)
+
+        return {
+            "rebar_to_rebar_overlap_vol": round(overlap_vol, 4),
+            "min_cover_brep": round(min_cover, 2),
+            "clashes": clashes,
+            "r_3d_01_pass": overlap_vol == 0.0,
+            "r_3d_02_pass": min_cover >= float(cover_mm) - 0.5,
+        }

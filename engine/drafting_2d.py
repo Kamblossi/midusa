@@ -21,6 +21,9 @@ class Drafting2D:
     def __init__(self, doc_units: int = units.MM) -> None:
         self.doc = ezdxf.new("R2010", setup=True)
         self.doc.units = doc_units
+        self.doc.header["$INSUNITS"] = 4
+        self.doc.header["$MEASUREMENT"] = 1
+        self.doc.header["$LWDISPLAY"] = 1
         self.msp = self.doc.modelspace()
         self._setup_layers()
 
@@ -30,18 +33,25 @@ class Drafting2D:
             # Mechanical / general layers (Phase 1)
             ("OUTLINE", 7, "Continuous", 35),
             ("HOLES", 4, "Continuous", 25),
-            ("CENTERLINES", 1, "CENTER", 13),
-            ("DIMENSIONS", 3, "Continuous", 18),
             ("TEXT", 2, "Continuous", 18),
-            # Structural CAD layers (Phase 2)
-            ("CONCRETE_OUTLINE", 7, "Continuous", 40),
+            # Standard 16 Structural & Civil CAD layers (Primitive 5)
+            ("CONCRETE_OUTLINE", 7, "Continuous", 35),
             ("CONCRETE_HIDDEN", 8, "DASHED", 18),
-            ("BLINDING", 9, "Continuous", 18),
-            ("REBAR_MAIN", 1, "Continuous", 35),
-            ("REBAR_DOWELS", 5, "Continuous", 35),
-            ("REBAR_TIES", 6, "Continuous", 25),
-            ("TEXT_NOTES", 2, "Continuous", 18),
-            ("SCHEDULE_GRID", 7, "Continuous", 18),
+            ("CONCRETE_HATCH", 9, "Continuous", 13),
+            ("BLINDING", 252, "Continuous", 25),
+            ("SOIL_GROUND", 30, "DASHED", 25),
+            ("REBAR_MAIN", 1, "Continuous", 50),
+            ("REBAR_SECONDARY", 3, "Continuous", 35),
+            ("REBAR_DOWELS", 6, "Continuous", 50),
+            ("REBAR_LINKS", 4, "Continuous", 30),
+            ("REBAR_TIES", 4, "Continuous", 30),  # alias for REBAR_LINKS
+            ("CENTERLINES", 2, "CENTER", 15),
+            ("GRIDLINES", 5, "CENTER", 18),
+            ("DIMENSIONS", 2, "Continuous", 18),
+            ("TEXT_NOTES", 7, "Continuous", 18),
+            ("CALLOUTS", 6, "Continuous", 25),
+            ("SCHEDULE_GRID", 7, "Continuous", 25),
+            ("TITLE_BLOCK", 7, "Continuous", 50),
         ]
         for name, color, linetype, lineweight in layer_defs:
             if name not in layers:
@@ -290,8 +300,27 @@ class Drafting2D:
     def save_dxf(self, path: str | Path) -> Path:
         out_path = Path(path)
         out_path.parent.mkdir(parents=True, exist_ok=True)
+        auditor = self.doc.audit()
+        if auditor.errors:
+            raise RuntimeError(f"DXF audit failed with {len(auditor.errors)} errors: {auditor.errors}")
         self.doc.saveas(str(out_path))
         return out_path
+
+    def export_dxf_and_png(
+        self,
+        dxf_path: str | Path,
+        png_path: str | Path,
+        dpi: int = 200,
+    ) -> tuple[Path, Path]:
+        return self.save_dxf(dxf_path), self.export_png(png_path, dpi=dpi)
+
+    def draw_bbs_table(
+        self,
+        origin: tuple[float, float],
+        rows: list[dict],
+        title: str = "BAR BENDING SCHEDULE (METRIC - mm / kg)",
+    ) -> None:
+        self.add_bbs_table(origin, rows, title=title)
 
     def export_png(
         self,
