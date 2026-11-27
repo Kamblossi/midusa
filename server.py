@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 from fastmcp import FastMCP
 
 import engine  # noqa: F401 — ensures usd_brep loads before any pxr usage
 from engine.dwg_bridge import dwg_to_dxf, dxf_to_dwg
+from engine.repair_loop import run_bounded_repair
+from engine.sketch_ir import parse_sketch_brief
 from engine.workspace import WorkspaceManager
 
 mcp = FastMCP("midusa")
@@ -65,6 +69,45 @@ def import_dwg(
 ) -> dict[str, Any]:
     """Import an AutoCAD .dwg drawing into an audited SI metric (mm, $INSUNITS=4) .dxf."""
     return dwg_to_dxf(dwg_path, dxf_path=dxf_path)
+
+
+@mcp.tool()
+def parse_sketch_to_ir(
+    text_or_notes: str,
+    template_hint: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Parse a rough engineering brief into a validated SI metric SketchIR payload."""
+    return parse_sketch_brief(text_or_notes, template_hint=template_hint, metadata=metadata)
+
+
+@mcp.tool()
+def build_with_repair(
+    recipe_name: str,
+    params: dict[str, Any],
+    workspace_dir: str | None = None,
+    max_retries: int = 3,
+    strict_warnings: bool = False,
+    sketch_ir: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Execute a structural recipe inside a bounded self-repair loop with checkpoints and provenance."""
+    return run_bounded_repair(
+        recipe_name=recipe_name,
+        initial_params=params,
+        workspace_root=workspace_dir,
+        max_retries=max_retries,
+        strict_warnings=strict_warnings,
+        sketch_ir=sketch_ir,
+    )
+
+
+@mcp.tool()
+def inspect_provenance(report_path: str) -> dict[str, Any]:
+    """Read and return a repair_provenance.json report."""
+    p = Path(report_path)
+    if not p.is_file():
+        raise FileNotFoundError(f"Provenance report not found: {p}")
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

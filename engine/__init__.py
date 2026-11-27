@@ -42,7 +42,9 @@ from engine.rebar_detailing import (
     total_schedule_mass_kg,
 )
 from engine.renderer import Renderer3D
+from engine.repair_loop import run_bounded_repair
 from engine.sketch_bridge import SketchBridge
+from engine.sketch_ir import SketchIR, compile_ir_to_params, parse_sketch_brief
 from engine.solid_3d import Solid3DBuilder
 from engine.workspace import WorkspaceManager
 
@@ -52,8 +54,12 @@ __all__ = [
     "DwgBridge",
     "Renderer3D",
     "SketchBridge",
+    "SketchIR",
     "Solid3DBuilder",
     "WorkspaceManager",
+    "compile_ir_to_params",
+    "parse_sketch_brief",
+    "run_bounded_repair",
     "build_bar_bending_schedule",
     "build_bbs_table",
     "calc_ld_tension",
