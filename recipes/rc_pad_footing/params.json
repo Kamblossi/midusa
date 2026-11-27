@@ -1,0 +1,20 @@
+{
+  "footing_width_mm": 2400.0,
+  "footing_length_mm": 2400.0,
+  "footing_depth_mm": 600.0,
+  "blinding_thickness_mm": 50.0,
+  "col_width_mm": 400.0,
+  "col_depth_mm": 400.0,
+  "col_stub_height_mm": 600.0,
+  "cover_mm": 75.0,
+  "bottom_bar_dia_mm": 16.0,
+  "bottom_bar_spacing_mm": 150.0,
+  "dowel_count": 4,
+  "dowel_bar_dia_mm": 20.0,
+  "dowel_projection_mm": 600.0,
+  "link_bar_dia_mm": 10.0,
+  "link_spacing_mm": 150.0,
+  "fc_footing_mpa": 25.0,
+  "fc_column_mpa": 30.0,
+  "fy_mpa": 460.0
+}

@@ -1,0 +1,1 @@
+"""Midusa parametric discipline recipes."""
